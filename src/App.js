@@ -1,23 +1,41 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
+import { CardPessoa } from './CardPessoa';
+
 function App() {
+  const [id, setId] = useState("12");
+  const [pessoa, setPessoa] = useState();
+
+  const handleIdChange = (evt) => {
+    setId(evt.target.value);
+  }
+
+  const handleOkClick = () => {
+    fetch(`https://swapi.dev/api/people/${id}/`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.name) {
+          console.log('data', data);
+          setPessoa(data);
+        } else {
+          setPessoa();
+          console.log('Detalhe do problema: ', data.detail);
+        }
+      })
+      .catch(err => {
+        setPessoa();
+        console.log('Erro: ', err);
+      })
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="text" value={id} onChange={handleIdChange} />
+      <button onClick={handleOkClick}>OK</button>
+      <br />
+      <br />
+      <CardPessoa pessoa={pessoa} />
     </div>
   );
 }
